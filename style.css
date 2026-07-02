@@ -1,0 +1,133 @@
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Orqafon rangini va markazlashtirishni body'ga o'tkazdik */
+body {
+  background: linear-gradient(60deg, #0026ff, #ff0044);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Elementlarni o'rab turuvchi zamonaviy SHISHA border (Konteyner) */
+#app {
+  /* Shishasimon effekt */
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  
+  /* Yarim shaffof ideal border */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  
+  /* Orqafondagi neon ranglar bilan chiroyli uyg'unlashuvchi soya */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3),
+              0 0 40px rgba(0, 38, 255, 0.25),
+              0 0 40px rgba(255, 0, 68, 0.25);
+  
+  /* Ichki masofalar */
+  padding: 3.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  /* Konteynerning eni (ixtiyoriy o'zgartirishingiz mumkin) */
+  width: 480px; 
+  max-width: 90%;
+  transition: all 0.3s ease;
+}
+
+.doors {
+  display: flex;
+  gap: 0.5rem; /* Eshikchalar orasidagi masofa */
+}
+
+.door {
+  background: #d9d9d9;
+  box-shadow: 0 0 3px 2px rgb(14, 239, 153) inset,
+              0 8px 16px rgba(0, 0, 0, 0.2);
+  width: 100px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 1ex;
+  margin: 0.5ch;
+}
+
+.boxes {
+  display: flex;
+  flex-direction: column;
+  transition: transform 2s ease-in-out;
+  will-change: transform;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  background-color: rgba(19, 179, 219, 0.274);
+  height: 100%;
+}
+
+/* Spin animation */
+@keyframes spinAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+/* Konteyner ichida chiroyli turishi uchun masofani moslashtirdik */
+.buttons {
+  margin: 3.5rem 0 1rem 0;
+}
+
+button {
+  cursor: pointer;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  margin: 0 0.5rem;
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  background: #ff0000;
+  color: aliceblue;
+  border: 2px solid #111;
+  font-weight: bold;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3),
+              inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Tugma bosilgandagi zamonaviy effekt */
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Info matni qobiq ichida chiroyli turishi uchun o'zgartirildi */
+.info {
+  margin-top: 1rem;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
