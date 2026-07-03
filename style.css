@@ -4,8 +4,8 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  border: 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 *,
@@ -14,7 +14,6 @@ body {
   box-sizing: inherit;
 }
 
-/* Orqafon rangini va markazlashtirishni body'ga o'tkazdik */
 body {
   background: linear-gradient(60deg, #0026ff, #ff0044);
   display: flex;
@@ -23,55 +22,59 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Elementlarni o'rab turuvchi zamonaviy SHISHA border (Konteyner) */
 #app {
-  /* Shishasimon effekt */
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  
-  /* Yarim shaffof ideal border */
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 2rem;
-  
-  /* Orqafondagi neon ranglar bilan chiroyli uyg'unlashuvchi soya */
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3),
               0 0 40px rgba(0, 38, 255, 0.25),
               0 0 40px rgba(255, 0, 68, 0.25);
-  
-  /* Ichki masofalar */
-  padding: 3.5rem 2.5rem;
+  padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
-  /* Konteynerning eni (ixtiyoriy o'zgartirishingiz mumkin) */
-  width: 480px; 
-  max-width: 90%;
+  width: 450px; 
+  max-width: 95%;
   transition: all 0.3s ease;
+}
+
+/* Balans dizayni */
+.balance-container {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  margin-bottom: 2rem;
+  border: 2px solid #ff0044;
+  box-shadow: 0 0 15px rgba(255, 0, 68, 0.4);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .doors {
   display: flex;
-  gap: 0.5rem; /* Eshikchalar orasidagi masofa */
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
 }
 
 .door {
-  background: #d9d9d9;
-  box-shadow: 0 0 3px 2px rgb(14, 239, 153) inset,
-              0 8px 16px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  box-shadow: 0 0 6px 2px rgb(14, 239, 153) inset,
+              0 8px 16px rgba(0, 0, 0, 0.3);
   width: 100px;
-  height: 150px;
+  height: 140px;
   overflow: hidden;
-  border-radius: 1ex;
-  margin: 0.5ch;
+  border-radius: 12px;
 }
 
 .boxes {
   display: flex;
   flex-direction: column;
-  transition: transform 2s ease-in-out;
   will-change: transform;
 }
 
@@ -80,54 +83,101 @@ body {
   justify-content: center;
   align-items: center;
   font-size: 3rem;
-  background-color: rgba(19, 179, 219, 0.274);
+  background-color: rgba(19, 179, 219, 0.1);
   height: 100%;
+  user-select: none;
 }
 
-/* Spin animation */
-@keyframes spinAnimation {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
-}
-
-/* Konteyner ichida chiroyli turishi uchun masofani moslashtirdik */
 .buttons {
-  margin: 3.5rem 0 1rem 0;
+  margin: 2.5rem 0 1rem 0;
+  display: flex;
+  gap: 1.5rem;
 }
 
+/* Tugmalarni yangicha neon ko'rinishi */
 button {
   cursor: pointer;
-  font-size: 2.2rem;
+  font-size: 1.5rem;
   text-transform: uppercase;
-  margin: 0 0.5rem;
-  border-radius: 50%;
-  width: 140px;
-  height: 140px;
-  background: #ff0000;
-  color: aliceblue;
-  border: 2px solid #111;
+  border-radius: 25px;
+  width: 120px;
+  height: 55px;
+  color: white;
+  border: none;
   font-weight: bold;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3),
-              inset 0 -5px 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Tugma bosilgandagi zamonaviy effekt */
+#spinner {
+  background: linear-gradient(135deg, #00ff66, #009933);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#reseter {
+  background: linear-gradient(135deg, #ff3333, #990000);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+}
+
 button:active {
-  transform: scale(0.95);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Info matni qobiq ichida chiroyli turishi uchun o'zgartirildi */
+button:disabled {
+  background: #555 !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .info {
   margin-top: 1rem;
   color: #fff;
-  font-size: 1.2rem;
-  font-weight: 500;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
+  min-height: 30px;
+}
+
+/*  MOBIL QURILMALAR UCHUN RESPONSIVE MOSLASHUVCHANLIK */
+@media (max-width: 400px) {
+  #app {
+    padding: 1.5rem 1rem;
+  }
+  
+  .balance-container {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .door {
+    width: 75px;
+    height: 110px;
+  }
+
+  .box {
+    font-size: 2.2rem;
+  }
+
+  button {
+    width: 100px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .buttons {
+    margin: 1.5rem 0 0.5rem 0;
+    gap: 1rem;
+  }
+
+  .info {
+    font-size: 1.1rem;
+  }
 }
