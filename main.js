@@ -28,7 +28,7 @@
         
         // Balansni tekshirish
         if (balance < betCost) {
-            infoText.textContent = "⚠️ Mablag' yetarli emas! Reset tugmasini bosing.";
+            infoText.textContent = "⚠️ Not enough funds! Click the Reset button.";
             infoText.style.color = "#ff3333";
             return;
         }
