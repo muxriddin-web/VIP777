@@ -135,7 +135,7 @@
         if (isSpinning) return;
         balance = 100;
         balanceDisplay.textContent = balance;
-        infoText.textContent = "O'yin yangilandi! Davom etamiz.";
+        infoText.textContent = "The game has been updated! Let's continue.";
         infoText.style.color = "#fff";
         init();
     }
