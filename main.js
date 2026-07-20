@@ -17,7 +17,7 @@
     const balanceDisplay = document.querySelector('#balance-amount');
 
     // Boshlang'ich ma'lumotlar text ko'rinishida pastda chiqmasligi uchun tozalaymiz
-    infoText.textContent = "Omadingizni sinab ko'ring!";
+    infoText.textContent = "Try your luck!";
     balanceDisplay.textContent = balance;
 
     spinBtn.addEventListener("click", spin);  
