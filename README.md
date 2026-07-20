@@ -123,9 +123,7 @@ Future versions will introduce additional gameplay mechanics and bonus features.
 The game keeps track of:
 
 - 💰 Current Balance
-- 🎰 Total Spins
 - 🏆 Total Wins
-- ❌ Total Losses
 - 📈 Highest Balance
 
 ---
@@ -139,8 +137,7 @@ Example:
 | Event | Reward |
 |--------|---------|
 | Small Win | +10$ |
-| Medium Win | +25$ |
-| Big Win | +50$ |
+| Medium Win | +20$ |
 | Jackpot | +100$ |
 
 ---
