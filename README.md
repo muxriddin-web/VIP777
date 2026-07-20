@@ -44,7 +44,7 @@ Optimized JavaScript logic provides smooth gameplay and instant reel animations 
 
 <div align="center">
   <a href="https://mfs-portfoliouz.netlify.app/projects">
-    <img src="photo_2026-07-15_11-01-29.jpg" alt=" Game Demo" width="600"/>
+    <img src="Screenshot_2.png" alt=" Game Demo" width="600"/>
   </a>
   <p><i>Click to watch the demo on my portfolio</i></p>
 </div>
