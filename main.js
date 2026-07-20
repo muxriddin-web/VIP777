@@ -103,7 +103,7 @@
             let prize = 100;
             if (r1 === "7️⃣") prize = 250; // Omadli 7 lik uchun maxsus katta yutuq
             balance += prize;
-            infoText.textContent = `🎉 JEKPOT! +${prize}$ yutdingiz!`;
+            infoText.textContent = `🎉 JEKPOT! +${prize}$ you won!`;
             infoText.style.color = "#00ff66";
         } else if (r1 === r2 || r2 === r3 || r1 === r3) {
             // Ikkita eshik bir xil bo'lsa
