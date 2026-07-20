@@ -108,7 +108,7 @@
         } else if (r1 === r2 || r2 === r3 || r1 === r3) {
             // Ikkita eshik bir xil bo'lsa
             balance += 20;
-            infoText.textContent = "🥳 Kichik yutuq! +20$";
+            infoText.textContent = "🥳 Small achievement! +20$";
             infoText.style.color = "#33ccff";
         } else {
             // Yutqazganda
