@@ -12,10 +12,6 @@ Whether you want to test your luck, chase the jackpot, or simply enjoy a fun slo
 
 Spin the reels and match symbols to win rewards with smooth casino-style animations.
 
-## 💰 Balance System
-
-Manage your virtual balance in real time as you place bets, win rewards, or reset your progress.
-
 ## 🏆 Winning Rewards
 
 Earn coins and increase your balance by matching winning combinations.
@@ -25,10 +21,8 @@ Earn coins and increase your balance by matching winning combinations.
 Monitor your gameplay with real-time statistics, including:
 
 - Current Balance
-- Total Spins
 - Total Wins
 - Total Losses
-- Highest Balance
 
 ## 🎨 Modern UI/UX
 
