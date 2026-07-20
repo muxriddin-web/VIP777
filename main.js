@@ -40,7 +40,7 @@
         isSpinning = true;
         spinBtn.disabled = true;
         resetBtn.disabled = true;
-        infoText.textContent = "Slotlar aylanmoqda...";
+        infoText.textContent = "Slots spinning...";
         infoText.style.color = "#fff";
 
         const results = [];
