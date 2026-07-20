@@ -112,7 +112,7 @@
             infoText.style.color = "#33ccff";
         } else {
             // Yutqazganda
-            infoText.textContent = "❌ Yana bir bor urinib ko'ring!";
+            infoText.textContent = "❌ Try again.";
             infoText.style.color = "#ff3333";
         }
 
