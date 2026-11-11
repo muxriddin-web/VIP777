@@ -75,6 +75,13 @@
         tone(150, 0, 0.08, "square", 0.08); // "klik"
     }
 
+    // Oddiy 3 ta bir xil tushganda: qisqa quvnoq yutuq ovozi (~1.2 soniya)
+    function playWinSound() {
+        [[523.25, 0], [659.25, 0.15], [783.99, 0.3], [1046.5, 0.45]].forEach(function (n, i) {
+            tone(n[0], n[1], i === 3 ? 0.7 : 0.18, "triangle", 0.18);
+        });
+    }
+
     // 777 tushganda: quvnoq fanfara musiqasi (~10 soniya)
     function playJackpotMusic() {
         const N = { C4: 261.63, G4: 392, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880, C6: 1046.5, E6: 1318.5 };
@@ -210,6 +217,8 @@
                 document.getElementById("jackpotAmount").textContent = prize;
                 jackpotEl.classList.add("show");
                 playJackpotMusic();
+            } else {
+                playWinSound();
             }
         } else if (balance === 0) {
             infoEl.textContent = "Balans tugadi. Qayta boshlash uchun Reset bosing.";
