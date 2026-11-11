@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP777 Slot Machine</title>
+    <title>VIP777</title>
     <link rel="icon" type="image/svg+xml" href="./luckyseven.svg" />
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <div id="app">
-        <!-- Balans panel-->
-        <div class="balance-container">
-            Balans: <span id="balance-amount">100</span>$
-        </div>
+        <div class="crown">👑</div>
+        <h1 class="title">Spin &amp; Win!</h1>
+        <div class="balance">Balans: <b id="balance">0</b>$</div>
+
         <div class="doors">
-            <div class="door">
-                <div class="boxes"></div>
-            </div>  
-            <div class="door">
-                <div class="boxes"></div>
-            </div>  
-            <div class="door">
-                <div class="boxes"></div>
-            </div>  
+            <div class="door"><div class="boxes"></div></div>
+            <div class="door"><div class="boxes"></div></div>
+            <div class="door"><div class="boxes"></div></div>
         </div>
+
         <div class="buttons">
             <button id="reseter">Reset</button>
             <button id="spinner">Spin</button>
         </div>
-        <p class="info"></p>
+
+        <p class="info" id="info"></p>
+
+        <div class="jackpot" id="jackpot">
+            <span>🎉 JEKPOT! +<b id="jackpotAmount">0</b>$</span>
+            YOU WIN!
+        </div>
     </div>
+
     <script src="./main.js"></script>
 </body>
 </html>
