@@ -1,158 +1,195 @@
 (function () {
     "use strict";
 
-    const items = [
-        "7️⃣", "🍒", "🍓", "🍋", "🍉", "🍇", "💵"
-    ];
-    
-    // O'yin sozlamalari
-    let balance = 100;
-    const betCost = 10; // Har bir aylantirish narxi
-    let isSpinning = false;
+    // ===== SOZLAMALAR =====
+    const CONFIG = {
+        START_BALANCE: 310,   // boshlang'ich balans
+        BET: 10,              // bitta Spin narxi
+        WIN_THREE: 100,       // 3 ta bir xil (777 dan tashqari)
+        WIN_777: 250000       // 777 jekpot mukofoti
+    };
 
-    const doors = document.querySelectorAll(".door");  
-    const spinBtn = document.querySelector("#spinner");  
-    const resetBtn = document.querySelector("#reseter"); 
-    const infoText = document.querySelector('.info');
-    const balanceDisplay = document.querySelector('#balance-amount');
+    const items = ["💲", "7️⃣", "🍒", "🍑", "🍌", "🍇", "🍓", "🍊", "🍉", "🍈", "🍏"];
+    const SEVEN = "7️⃣";
 
-    // Boshlang'ich ma'lumotlar text ko'rinishida pastda chiqmasligi uchun tozalaymiz
-    infoText.textContent = "Try your luck!";
-    balanceDisplay.textContent = balance;
+    const app = document.getElementById("app");
+    const doors = Array.from(document.querySelectorAll(".door"));
+    const spinBtn = document.getElementById("spinner");
+    const resetBtn = document.getElementById("reseter");
+    const balanceEl = document.getElementById("balance");
+    const infoEl = document.getElementById("info");
+    const jackpotEl = document.getElementById("jackpot");
 
-    spinBtn.addEventListener("click", spin);  
-    resetBtn.addEventListener("click", () => resetGame()); 
+    const BASE_DURATION = 2;   // 1-g'altak to'xtash vaqti (soniya)
+    const STEP = 0.6;          // keyingi g'altaklar orasidagi kechikish
 
-    function spin() {
-        if (isSpinning) return;
-        
-        // Balansni tekshirish
-        if (balance < betCost) {
-            infoText.textContent = "⚠️ Not enough funds! Click the Reset button.";
-            infoText.style.color = "#ff3333";
-            return;
+    let balance = CONFIG.START_BALANCE;
+    let shown = ["?", "?", "?"];
+    let busy = false;
+
+    // ===== AUDIO (Web Audio, tashqi fayl kerak emas) =====
+    let ctx = null;
+    function audio() {
+        if (!ctx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) ctx = new AC();
         }
+        if (ctx && ctx.state === "suspended") ctx.resume();
+        return ctx;
+    }
 
-        // Balansni kamaytirish
-        balance -= betCost;
-        balanceDisplay.textContent = balance;
-        
-        isSpinning = true;
-        spinBtn.disabled = true;
-        resetBtn.disabled = true;
-        infoText.textContent = "Slots spinning...";
-        infoText.style.color = "#fff";
+    function tone(freq, start, dur, type, vol) {
+        const c = audio();
+        if (!c) return;
+        const t = c.currentTime + start;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.05);
+    }
 
-        const results = [];
-        const duration = 2; // sekundda animatsiya vaqti
-        const groups = 3;   // aylanishlar soni (effekt uchun)
+    // 777 tushganda: quvnoq fanfara musiqasi (~7 soniya)
+    function playJackpotMusic() {
+        const N = { C4: 261.63, G4: 392, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880, C6: 1046.5, E6: 1318.5 };
+        const melody = [
+            ["C5", 0, 0.2], ["E5", 0.2, 0.2], ["G5", 0.4, 0.2], ["C6", 0.6, 0.45],
+            ["G5", 1.1, 0.2], ["C6", 1.3, 0.2], ["E6", 1.5, 0.7],
+            ["A5", 2.2, 0.2], ["G5", 2.4, 0.2], ["E5", 2.6, 0.2], ["D5", 2.8, 0.2], ["C6", 3.0, 0.5]
+        ];
+        for (let loop = 0; loop < 3; loop++) {
+            const offset = loop * 3.6;
+            melody.forEach(function (n) {
+                tone(N[n[0]], offset + n[1], n[2], "square", 0.08);
+                tone(N[n[0]] / 2, offset + n[1], n[2], "triangle", 0.1);
+            });
+            tone(N.C4, offset, 1.7, "triangle", 0.12);
+            tone(N.G4, offset + 1.8, 1.7, "triangle", 0.12);
+        }
+    }
 
-        doors.forEach((door, index) => {
-            const boxes = door.querySelector(".boxes");
-            const boxesClone = boxes.cloneNode(false);  
-            const pool = []; 
+    // Balans 0 bo'lganda: g'amgin tushuvchi ovoz
+    function playZeroSound() {
+        [[392, 0], [349, 0.4], [330, 0.8], [262, 1.2]].forEach(function (n, i) {
+            tone(n[0], n[1], i === 3 ? 1.1 : 0.4, "sawtooth", 0.1);
+        });
+    }
 
-            // Tasodifiy aylanish elementlari ro'yxati
-            const arr = [];
-            for (let n = 0; n < groups; n++) {
-                arr.push(...items);
-            }
-            pool.push(...shuffle(arr));  
+    // ===== UI =====
+    function updateBalance() {
+        balanceEl.textContent = balance.toLocaleString("en-US");
+        spinBtn.disabled = busy || balance <= 0;
+        resetBtn.disabled = busy;
+    }
 
-            // Oxirgi to'xtash emojisini aniqlash va saqlash
-            const winningItem = pool[0];
-            results.push(winningItem);
+    function setWin(on) {
+        app.classList.toggle("win", on);
+        doors.forEach(function (d) { d.classList.toggle("win", on); });
+    }
 
-            // Box elementlarini generatsiya qilish
-            for (let i = pool.length - 1; i >= 0; i--) {
-                const box = document.createElement("div");
-                box.classList.add("box");
-                box.style.width = door.clientWidth + "px"; 
-                box.style.height = door.clientHeight + "px"; 
-                box.textContent = pool[i];  
-                boxesClone.appendChild(box);
-            }
+    function clearResult() {
+        setWin(false);
+        jackpotEl.classList.remove("show");
+    }
 
-            // Animatsiya sozlamalari (JS orqali boshqariladi)
-            boxesClone.style.transition = `transform ${duration + index * 0.5}s cubic-bezier(0.1, 1, 0.1, 1)`;
-            boxesClone.style.transform = `translateY(0px)`;
-            
-            door.replaceChild(boxesClone, boxes); 
+    // ===== G'ALTAKLAR =====
+    function randomItem() {
+        return items[Math.floor(Math.random() * items.length)];
+    }
 
-            // Brauzerga o'zgarishni his qildirish va animatsiyani ishga tushirish
-            setTimeout(() => {
-                boxesClone.style.transform = `translateY(-${door.clientHeight * (pool.length - 1)}px)`;
-            }, 50);
+    function render(door, list, duration) {
+        const boxes = door.querySelector(".boxes");
+        const clone = boxes.cloneNode(false);
+        const h = door.clientHeight;
+
+        list.forEach(function (symbol) {
+            const box = document.createElement("div");
+            box.className = "box";
+            box.style.width = door.clientWidth + "px";
+            box.style.height = h + "px";
+            box.textContent = symbol;
+            clone.appendChild(box);
         });
 
-        // Hamma eshiklar aylanib bo'lgandan keyingi hisob-kitob (eng oxirgi eshik tugash vaqti)
-        setTimeout(() => {
-            checkResult(results);
-            isSpinning = false;
-            spinBtn.disabled = false;
-            resetBtn.disabled = false;
-        }, (duration + (doors.length - 1) * 0.5) * 1000 + 100);
-    }
+        const finalY = "translateY(-" + h * (list.length - 1) + "px)";
+        clone.style.transition = "none";
+        clone.style.transform = "translateY(0)";
+        door.replaceChild(clone, boxes);
 
-    // Yutuqni tekshirish mantiqi
-    function checkResult(results) {
-        const [r1, r2, r3] = results;
-
-        if (r1 === r2 && r2 === r3) {
-            // Uchchalasi bir xil tushsa (Jackpot)
-            let prize = 100;
-            if (r1 === "7️⃣") prize = 250; // Omadli 7 lik uchun maxsus katta yutuq
-            balance += prize;
-            infoText.textContent = `🎉 JEKPOT! +${prize}$ you won!`;
-            infoText.style.color = "#00ff66";
-        } else if (r1 === r2 || r2 === r3 || r1 === r3) {
-            // Ikkita eshik bir xil bo'lsa
-            balance += 20;
-            infoText.textContent = "🥳 Small achievement! +20$";
-            infoText.style.color = "#33ccff";
-        } else {
-            // Yutqazganda
-            infoText.textContent = "❌ Try again.";
-            infoText.style.color = "#ff3333";
+        if (duration > 0) {
+            clone.getBoundingClientRect(); // animatsiya boshlanishi uchun
+            clone.style.transition = "transform " + duration + "s cubic-bezier(0.2, 0.8, 0.2, 1)";
         }
-
-        balanceDisplay.textContent = balance;
-    }
-
-    function shuffle(arr) {
-        let m = arr.length;
-        let i, temp;
-        while (m) {
-            i = Math.floor(Math.random() * m--);
-            temp = arr[m];
-            arr[m] = arr[i];
-            arr[i] = temp;
-        }
-        return arr;
-    }
-
-    function resetGame() {
-        if (isSpinning) return;
-        balance = 100;
-        balanceDisplay.textContent = balance;
-        infoText.textContent = "The game has been updated! Let's continue.";
-        infoText.style.color = "#fff";
-        init();
+        clone.style.transform = finalY;
     }
 
     function init() {
-        for (const door of doors) {
-            const boxes = door.querySelector(".boxes");
-            const boxesClone = boxes.cloneNode(false);
-            const box = document.createElement("div");
-            box.classList.add("box");
-            box.style.width = door.clientWidth + "px";
-            box.style.height = door.clientHeight + "px";
-            box.textContent = "❓";
-            boxesClone.appendChild(box);
-            door.replaceChild(boxesClone, boxes);
-        }
+        shown = ["?", "?", "?"];
+        balance = CONFIG.START_BALANCE;
+        busy = false;
+        clearResult();
+        doors.forEach(function (door) { render(door, ["?"], 0); });
+        infoEl.textContent = "Tikish: " + CONFIG.BET + "$  |  3 ta bir xil: +" + CONFIG.WIN_THREE + "$  |  777: +" + CONFIG.WIN_777 + "$";
+        updateBalance();
     }
 
-    init();  
+    function wait(ms) {
+        return new Promise(function (resolve) { setTimeout(resolve, ms); });
+    }
+
+    async function spin() {
+        if (busy || balance <= 0) return;
+        audio(); // brauzer ovoz ruxsati uchun (foydalanuvchi bosgan lahza)
+        busy = true;
+        clearResult();
+
+        const bet = Math.min(CONFIG.BET, balance);
+        balance -= bet;
+        updateBalance();
+        infoEl.textContent = "";
+
+        const result = doors.map(randomItem);
+        doors.forEach(function (door, i) {
+            const filler = Array.from({ length: 14 + i * 6 }, randomItem);
+            render(door, [shown[i]].concat(filler, result[i]), BASE_DURATION + i * STEP);
+        });
+
+        await wait((BASE_DURATION + (doors.length - 1) * STEP) * 1000 + 150);
+
+        shown = result;
+        busy = false;
+        finish(result);
+    }
+
+    function finish(result) {
+        const triple = result.every(function (s) { return s === result[0]; });
+
+        if (triple) {
+            const jackpot = result[0] === SEVEN;
+            const prize = jackpot ? CONFIG.WIN_777 : CONFIG.WIN_THREE;
+            balance += prize;
+            setWin(true);
+            infoEl.textContent = "Yutuq: +" + prize.toLocaleString("en-US") + "$";
+            if (jackpot) {
+                document.getElementById("jackpotAmount").textContent = prize;
+                jackpotEl.classList.add("show");
+                playJackpotMusic();
+            }
+        } else if (balance === 0) {
+            infoEl.textContent = "Balans tugadi. Qayta boshlash uchun Reset bosing.";
+            playZeroSound();
+        }
+        updateBalance();
+    }
+
+    spinBtn.addEventListener("click", spin);
+    resetBtn.addEventListener("click", init);
+
+    init();
 })();
