@@ -55,7 +55,27 @@
         osc.stop(t + dur + 0.05);
     }
 
-    // 777 tushganda: quvnoq fanfara musiqasi (~7 soniya)
+    // Spin bosilganda: qisqa "vzzz" ovozi
+    function playSpinSound() {
+        const c = audio();
+        if (!c) return;
+        const t = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(300, t);
+        osc.frequency.exponentialRampToValueAtTime(900, t + 0.3);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.15, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(t);
+        osc.stop(t + 0.4);
+        tone(150, 0, 0.08, "square", 0.08); // "klik"
+    }
+
+    // 777 tushganda: quvnoq fanfara musiqasi (~10 soniya)
     function playJackpotMusic() {
         const N = { C4: 261.63, G4: 392, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880, C6: 1046.5, E6: 1318.5 };
         const melody = [
@@ -103,21 +123,29 @@
         return items[Math.floor(Math.random() * items.length)];
     }
 
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+        return arr;
+    }
+
     function render(door, list, duration) {
         const boxes = door.querySelector(".boxes");
         const clone = boxes.cloneNode(false);
-        const h = door.clientHeight;
 
         list.forEach(function (symbol) {
             const box = document.createElement("div");
             box.className = "box";
-            box.style.width = door.clientWidth + "px";
-            box.style.height = h + "px";
             box.textContent = symbol;
             clone.appendChild(box);
         });
 
-        const finalY = "translateY(-" + h * (list.length - 1) + "px)";
+        // foiz o'lchovi: ekran o'lchami o'zgarsa ham g'altak to'g'ri turadi
+        const finalY = "translateY(-" + ((list.length - 1) / list.length) * 100 + "%)";
         clone.style.transition = "none";
         clone.style.transform = "translateY(0)";
         door.replaceChild(clone, boxes);
@@ -146,6 +174,7 @@
     async function spin() {
         if (busy || balance <= 0) return;
         audio(); // brauzer ovoz ruxsati uchun (foydalanuvchi bosgan lahza)
+        playSpinSound();
         busy = true;
         clearResult();
 
@@ -156,8 +185,9 @@
 
         const result = doors.map(randomItem);
         doors.forEach(function (door, i) {
-            const filler = Array.from({ length: 14 + i * 6 }, randomItem);
-            render(door, [shown[i]].concat(filler, result[i]), BASE_DURATION + i * STEP);
+            // har bir rasm g'altakda faqat bir marta o'tadi
+            const middle = shuffle(items.filter(function (s) { return s !== shown[i] && s !== result[i]; }));
+            render(door, [shown[i]].concat(middle, result[i]), BASE_DURATION + i * STEP);
         });
 
         await wait((BASE_DURATION + (doors.length - 1) * STEP) * 1000 + 150);
