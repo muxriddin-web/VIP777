@@ -1,11 +1,17 @@
+@property --a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 html,
 body {
   width: 100vw;
   height: 100vh;
   margin: 0;
   padding: 0;
+  border: 0;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 *,
@@ -15,61 +21,136 @@ body {
 }
 
 body {
-  background: linear-gradient(60deg, #0026ff, #ff0044);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(122, 44, 255, 0.45), transparent 55%),
+    radial-gradient(circle at 85% 90%, rgba(255, 120, 0, 0.3), transparent 50%),
+    linear-gradient(60deg, #0a1160, #3d0830);
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Asosiy shisha konteyner */
 #app {
-  background: rgba(255, 255, 255, 0.06);
+  position: relative;
+  background: rgba(22, 8, 52, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 2rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3),
-              0 0 40px rgba(0, 38, 255, 0.25),
-              0 0 40px rgba(255, 0, 68, 0.25);
-  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+              0 0 36px rgba(180, 50, 255, 0.45),
+              0 0 50px rgba(255, 140, 0, 0.3);
+  padding: 2.5rem 2rem 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  width: 450px; 
-  max-width: 95%;
-  transition: all 0.3s ease;
+  width: 440px;
+  max-width: 92%;
 }
 
-/* Balans dizayni */
-.balance-container {
-  font-size: 1.6rem;
-  font-weight: bold;
+/* Doimiy neon border (binafsha -> to'q sariq) */
+#app::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 4px;
+  background: linear-gradient(135deg, #ff2bd6, #7a2cff 45%, #ff9d00);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Rangbarang harakatlanuvchi border (faqat 3 ta bir xil tushganda) */
+#app::after,
+.door::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+  padding: 5px;
+  background: conic-gradient(from var(--a), #ff0040, #ffea00, #00ff6a, #00e5ff, #3d5afe, #e040fb, #ff0040);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#app::after { inset: -3px; z-index: 2; }
+.door::after { inset: 0; }
+
+#app.win::after,
+.door.win::after {
+  opacity: 1;
+  animation: rainbow 1.2s linear infinite;
+}
+
+#app.win {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+              0 0 50px rgba(255, 255, 255, 0.35);
+}
+
+@keyframes rainbow {
+  to { --a: 360deg; }
+}
+
+.crown {
+  font-size: 3.2rem;
+  line-height: 1;
+  margin-top: -3.6rem;
+  filter: drop-shadow(0 0 14px rgba(255, 190, 0, 0.9));
+}
+
+.title {
+  margin: 0.2rem 0 1rem;
+  font-size: 3rem;
+  font-weight: 900;
+  font-style: italic;
+  text-align: center;
+  background: linear-gradient(180deg, #fff3b0, #ffb300 60%, #ff6a00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(255, 130, 0, 0.7));
+}
+
+.balance {
   color: #fff;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 0.5rem 1.5rem;
-  border-radius: 50px;
-  margin-bottom: 2rem;
-  border: 2px solid #ff0044;
-  box-shadow: 0 0 15px rgba(255, 0, 68, 0.4);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.35rem 1.4rem;
+  margin-bottom: 1.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid rgba(255, 190, 0, 0.7);
+  box-shadow: 0 0 12px rgba(255, 190, 0, 0.35);
+}
+
+.balance b {
+  color: #ffd54a;
 }
 
 .doors {
   display: flex;
   gap: 0.5rem;
-  justify-content: center;
-  width: 100%;
 }
 
+/* Oq ramkali shisha g'altaklar */
 .door {
-  background: #ffffff;
-  box-shadow: 0 0 6px 2px rgb(14, 239, 153) inset,
-              0 8px 16px rgba(0, 0, 0, 0.3);
+  position: relative;
+  background: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.55),
+              0 8px 16px rgba(0, 0, 0, 0.4);
   width: 100px;
-  height: 140px;
+  height: 150px;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 14px;
+  margin: 0.5ch;
 }
 
 .boxes {
@@ -83,101 +164,97 @@ body {
   justify-content: center;
   align-items: center;
   font-size: 3rem;
-  background-color: rgba(19, 179, 219, 0.1);
-  height: 100%;
-  user-select: none;
+  background: #fff;
+  flex-shrink: 0;
 }
 
 .buttons {
-  margin: 2.5rem 0 1rem 0;
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
+  margin: 1.8rem 0 1rem;
 }
 
-/* Tugmalarni yangicha neon ko'rinishi */
 button {
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 800;
   text-transform: uppercase;
-  border-radius: 25px;
-  width: 120px;
-  height: 55px;
-  color: white;
-  border: none;
-  font-weight: bold;
-  transition: all 0.2s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-#spinner {
-  background: linear-gradient(135deg, #00ff66, #009933);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  color: #fff;
+  min-width: 130px;
+  height: 52px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s;
 }
 
 #reseter {
-  background: linear-gradient(135deg, #ff3333, #990000);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background: linear-gradient(180deg, #ff4b4b, #c40000);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 0, 0, 0.5);
 }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+#spinner {
+  background: linear-gradient(180deg, #3dff7a, #00a84a);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4), 0 0 14px rgba(0, 255, 100, 0.5);
 }
 
-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+button:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 button:disabled {
-  background: #555 !important;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  opacity: 0.45;
 }
 
 .info {
-  margin-top: 1rem;
+  margin: 0.5rem 0 0;
+  min-height: 1.5em;
   color: #fff;
-  font-size: 1.3rem;
-  font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 1rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   text-align: center;
-  min-height: 30px;
 }
 
-/*  MOBIL QURILMALAR UCHUN RESPONSIVE MOSLASHUVCHANLIK */
-@media (max-width: 400px) {
-  #app {
-    padding: 1.5rem 1rem;
-  }
-  
-  .balance-container {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
-  }
+/* Jekpot lavhasi */
+.jackpot {
+  display: none;
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.5rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #4a1590, #1d0842);
+  border: 3px solid #ffb300;
+  box-shadow: 0 0 22px rgba(255, 170, 0, 0.7);
+  animation: pulse 0.9s ease-in-out infinite alternate;
+}
 
-  .door {
-    width: 75px;
-    height: 110px;
-  }
+.jackpot span {
+  display: block;
+  color: #ffd54a;
+  font-size: 1.1rem;
+}
 
-  .box {
-    font-size: 2.2rem;
-  }
+.jackpot.show { display: block; }
 
-  button {
-    width: 100px;
-    height: 50px;
-    font-size: 1.2rem;
-  }
-  
-  .buttons {
-    margin: 1.5rem 0 0.5rem 0;
-    gap: 1rem;
-  }
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.04); }
+}
 
-  .info {
-    font-size: 1.1rem;
-  }
+@media (max-width: 420px) {
+  #app { padding: 2.5rem 1rem 1.5rem; }
+  .door { width: 84px; height: 130px; }
+  .box { font-size: 2.4rem; }
+  .title { font-size: 2.4rem; }
+  button { min-width: 110px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jackpot { animation: none; }
 }
